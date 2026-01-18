@@ -302,8 +302,14 @@ class KeyboardLayout extends StatelessWidget {
   Widget _buildCandidateBar(BuildContext context) {
     return Consumer<KeyboardState>(
       builder: (context, state, child) {
-        // Show pinyin buffer if in Chinese mode and typing
-        if (state.isChinese && state.currentPinyin.isNotEmpty && state.candidates.isEmpty) {
+        // Show candidates in real-time if in Chinese mode with pinyin
+        if (!state.isChinese || (state.currentPinyin.isEmpty && state.candidates.isEmpty)) {
+          return const SizedBox.shrink();
+        }
+        
+        // Show pinyin composition with real-time candidates
+        if (state.candidates.isEmpty) {
+          // No matches found for current pinyin
           return Container(
             height: 48,
             margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -311,11 +317,11 @@ class KeyboardLayout extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF2D2D2D),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.blue.withOpacity(0.3), width: 1),
+              border: Border.all(color: Colors.orange.withOpacity(0.5), width: 1),
             ),
             child: Row(
               children: [
-                const Icon(Icons.edit, color: Colors.blue, size: 18),
+                const Icon(Icons.edit, color: Colors.orange, size: 18),
                 const SizedBox(width: 8),
                 Text(
                   '拼音: ${state.currentPinyin}',
@@ -329,13 +335,13 @@ class KeyboardLayout extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.2),
+                    color: Colors.orange.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Text(
-                    '按空格显示候选',
+                    '无匹配',
                     style: TextStyle(
-                      color: Colors.blueAccent,
+                      color: Colors.orangeAccent,
                       fontSize: 12,
                     ),
                   ),
@@ -345,10 +351,7 @@ class KeyboardLayout extends StatelessWidget {
           );
         }
         
-        // Show candidates if available
-        if (!state.isChinese || state.candidates.isEmpty) {
-          return const SizedBox.shrink();
-        }
+        // Show candidates with pinyin composition at top
         return Container(
           height: 58,
           margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -358,61 +361,89 @@ class KeyboardLayout extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.blue.withOpacity(0.4), width: 1.5),
           ),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.only(right: 12),
-                child: Icon(Icons.text_fields, color: Colors.blue, size: 20),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: state.candidates.length,
-                  itemBuilder: (context, index) {
-                    final isSelected = index == state.selectedCandidateIndex;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: GestureDetector(
-                        onTap: () {
-                          // Directly select the candidate on click (Sogou behavior)
-                          _handleCandidateSelect(context, index);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: isSelected ? Colors.blue : Colors.transparent,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: isSelected ? Colors.blue : Colors.white24,
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '${index + 1}.',
-                                style: TextStyle(
-                                  color: isSelected ? Colors.white : Colors.white38,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                state.candidates[index],
-                                style: TextStyle(
-                                  color: isSelected ? Colors.white : Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
+              // Pinyin composition line
+              if (state.currentPinyin.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.edit, color: Colors.blue, size: 14),
+                      const SizedBox(width: 6),
+                      Text(
+                        state.currentPinyin,
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    );
-                  },
+                    ],
+                  ),
+                ),
+              // Candidates line
+              Expanded(
+                child: Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: Icon(Icons.text_fields, color: Colors.green, size: 18),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.candidates.length > 9 ? 9 : state.candidates.length,
+                        itemBuilder: (context, index) {
+                          final isSelected = index == state.selectedCandidateIndex;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: GestureDetector(
+                              onTap: () {
+                                // Directly select the candidate on click
+                                _handleCandidateSelect(context, index);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: isSelected ? Colors.blue : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: isSelected ? Colors.blue : Colors.white24,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '${index + 1}.',
+                                      style: TextStyle(
+                                        color: isSelected ? Colors.white : Colors.white54,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      state.candidates[index],
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

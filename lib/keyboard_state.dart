@@ -77,16 +77,22 @@ class KeyboardState extends ChangeNotifier {
 
   void updatePinyin(String pinyin) {
     _currentPinyin = pinyin;
-    // Don't generate candidates automatically - wait for Space key
-    _candidates = [];
-    _selectedCandidateIndex = 0;
+    // Generate candidates in real-time as user types
+    if (pinyin.isNotEmpty) {
+      _candidates = _generateCandidates(pinyin);
+      _selectedCandidateIndex = 0;
+    } else {
+      _candidates = [];
+      _selectedCandidateIndex = 0;
+    }
     notifyListeners();
   }
 
   void showCandidates() {
-    // Generate candidates when Space is pressed
-    if (_currentPinyin.isNotEmpty) {
-      _candidates = _generateCandidates(_currentPinyin);
+    // Refresh candidates when Space is pressed (already generated in real-time)
+    // This method now mainly handles Space key selection logic
+    if (_currentPinyin.isNotEmpty && _candidates.isNotEmpty) {
+      // Space selects the first/highlighted candidate
       _selectedCandidateIndex = 0;
       notifyListeners();
     }
