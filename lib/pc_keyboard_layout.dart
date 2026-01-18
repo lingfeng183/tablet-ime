@@ -19,6 +19,9 @@ class PCKeyboardLayout extends StatelessWidget {
     return Container(
       height: keyboardHeight,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      decoration: const BoxDecoration(
+        color: Color(0xFF1E1E1E), // Dark background to prevent transparency
+      ),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -68,7 +71,10 @@ class PCKeyboardLayout extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: GestureDetector(
-                  onTap: () => _handleCandidateSelect(context, index),
+                  onTap: () {
+                    // Update selection index instead of directly selecting
+                    state.selectedCandidateIndex = index;
+                  },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
@@ -613,6 +619,16 @@ class PCKeyboardLayout extends StatelessWidget {
         state.setShiftPressed(!state.shiftPressed);
         break;
       default:
+        // Check if it's a number key in Chinese mode with candidates
+        if (state.isChinese && state.candidates.isNotEmpty && 
+            key.length == 1 && int.tryParse(key) != null) {
+          final index = int.parse(key) - 1; // Convert 1-9 to 0-8 index
+          if (index >= 0 && index < state.candidates.length) {
+            _handleCandidateSelect(context, index);
+            return;
+          }
+        }
+        // Otherwise, just commit the text
         service.commitText(key);
         if (state.shiftPressed) {
           state.setShiftPressed(false);

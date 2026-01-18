@@ -19,6 +19,9 @@ class KeyboardLayout extends StatelessWidget {
     return Container(
       height: keyboardHeight,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      decoration: const BoxDecoration(
+        color: Color(0xFF1E1E1E), // Dark background to prevent transparency
+      ),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -325,7 +328,10 @@ class KeyboardLayout extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: GestureDetector(
-                  onTap: () => _handleCandidateSelect(context, index),
+                  onTap: () {
+                    // Update selection index instead of directly selecting
+                    state.selectedCandidateIndex = index;
+                  },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
@@ -353,9 +359,17 @@ class KeyboardLayout extends StatelessWidget {
 
   void _handleNumberKey(BuildContext context, String num) {
     final state = context.read<KeyboardState>();
-    if (state.isChinese) {
+    if (state.isChinese && state.candidates.isNotEmpty) {
+      // In Chinese mode with candidates, number keys select candidates
+      final index = int.parse(num) - 1; // Convert 1-9 to 0-8 index
+      if (index >= 0 && index < state.candidates.length) {
+        _handleCandidateSelect(context, index);
+      }
+    } else if (state.isChinese) {
+      // In Chinese mode without candidates, add to pinyin
       state.updatePinyin(state.currentPinyin + num.toLowerCase());
     } else {
+      // In English mode, just type the number
       context.read<KeyboardService>().commitText(num);
     }
   }
