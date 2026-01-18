@@ -30,11 +30,11 @@ public class TabletInputMethodService extends InputMethodService {
         super.onCreate();
         MainActivity.setImeService(this);
         
-        // Initialize Flutter engine with thread safety
+        // Initialize Flutter engine with thread safety using application context
         synchronized (ENGINE_LOCK) {
             flutterEngine = FlutterEngineCache.getInstance().get(ENGINE_ID);
             if (flutterEngine == null) {
-                flutterEngine = new FlutterEngine(this);
+                flutterEngine = new FlutterEngine(getApplicationContext());
                 flutterEngine.getDartExecutor().executeDartEntrypoint(
                     DartExecutor.DartEntrypoint.createDefault()
                 );
@@ -49,7 +49,6 @@ public class TabletInputMethodService extends InputMethodService {
         );
         methodChannel.setMethodCallHandler((call, result) -> {
             switch (call.method) {
-                case "sendText":
                 case "commitText":
                     String text = call.argument("text");
                     if (text != null) {
@@ -87,6 +86,10 @@ public class TabletInputMethodService extends InputMethodService {
     public View onCreateInputView() {
         // Clean up previous view if exists
         if (flutterView != null) {
+            ViewGroup parent = (ViewGroup) flutterView.getParent();
+            if (parent != null) {
+                parent.removeView(flutterView);
+            }
             flutterView.detachFromFlutterEngine();
             flutterView = null;
         }
@@ -121,6 +124,10 @@ public class TabletInputMethodService extends InputMethodService {
     @Override
     public void onDestroy() {
         if (flutterView != null) {
+            ViewGroup parent = (ViewGroup) flutterView.getParent();
+            if (parent != null) {
+                parent.removeView(flutterView);
+            }
             flutterView.detachFromFlutterEngine();
             flutterView = null;
         }

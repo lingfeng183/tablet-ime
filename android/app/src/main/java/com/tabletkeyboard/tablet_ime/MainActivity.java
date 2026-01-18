@@ -7,7 +7,7 @@ import io.flutter.plugin.common.MethodChannel;
 
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.tabletkeyboard/tablet_ime";
-    private static volatile TabletInputMethodService imeService;
+    private static TabletInputMethodService imeService;
 
     public static synchronized void setImeService(TabletInputMethodService service) {
         imeService = service;
@@ -30,7 +30,6 @@ public class MainActivity extends FlutterActivity {
                 }
 
                 switch (call.method) {
-                    case "sendText":
                     case "commitText":
                         String text = call.argument("text");
                         if (text != null) {

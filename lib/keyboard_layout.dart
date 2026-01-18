@@ -351,7 +351,7 @@ class KeyboardLayout extends StatelessWidget {
     if (state.isChinese) {
       state.updatePinyin(state.currentPinyin + num.toLowerCase());
     } else {
-      context.read<KeyboardService>().sendText(num);
+      context.read<KeyboardService>().commitText(num);
     }
   }
 
@@ -386,7 +386,7 @@ class KeyboardLayout extends StatelessWidget {
           if (state.isChinese) {
             state.updatePinyin(state.currentPinyin + key.toLowerCase());
           } else {
-            service.sendText(key);
+            service.commitText(key);
           }
         }
     }
@@ -400,7 +400,7 @@ class KeyboardLayout extends StatelessWidget {
       service.commitText(state.candidates[state.selectedCandidateIndex]);
       state.clearPinyin();
     } else {
-      service.sendText(' ');
+      service.commitText(' ');
     }
   }
 
