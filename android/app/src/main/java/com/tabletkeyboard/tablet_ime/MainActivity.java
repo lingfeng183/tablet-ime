@@ -7,10 +7,14 @@ import io.flutter.plugin.common.MethodChannel;
 
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.tabletkeyboard/tablet_ime";
-    private static TabletInputMethodService imeService;
+    private static volatile TabletInputMethodService imeService;
 
-    public static void setImeService(TabletInputMethodService service) {
+    public static synchronized void setImeService(TabletInputMethodService service) {
         imeService = service;
+    }
+
+    private static synchronized TabletInputMethodService getImeService() {
+        return imeService;
     }
 
     @Override
@@ -19,16 +23,18 @@ public class MainActivity extends FlutterActivity {
         
         new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
             .setMethodCallHandler((call, result) -> {
-                if (imeService == null) {
+                TabletInputMethodService service = getImeService();
+                if (service == null) {
                     result.error("IME_NOT_ACTIVE", "Input method service is not active", null);
                     return;
                 }
 
                 switch (call.method) {
                     case "sendText":
+                    case "commitText":
                         String text = call.argument("text");
                         if (text != null) {
-                            imeService.sendText(text);
+                            service.commitText(text);
                             result.success(null);
                         } else {
                             result.error("INVALID_ARGUMENT", "Text argument is null", null);
@@ -39,7 +45,7 @@ public class MainActivity extends FlutterActivity {
                         Integer keyCode = call.argument("keyCode");
                         Boolean isDown = call.argument("isDown");
                         if (keyCode != null && isDown != null) {
-                            imeService.sendKeyEvent(keyCode, isDown);
+                            service.sendKeyEvent(keyCode, isDown);
                             result.success(null);
                         } else {
                             result.error("INVALID_ARGUMENT", "Invalid keyCode or isDown", null);
@@ -47,18 +53,8 @@ public class MainActivity extends FlutterActivity {
                         break;
                     
                     case "deleteText":
-                        imeService.deleteText();
+                        service.deleteText();
                         result.success(null);
-                        break;
-                    
-                    case "commitText":
-                        String commitText = call.argument("text");
-                        if (commitText != null) {
-                            imeService.commitText(commitText);
-                            result.success(null);
-                        } else {
-                            result.error("INVALID_ARGUMENT", "Text argument is null", null);
-                        }
                         break;
                     
                     default:

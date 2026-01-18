@@ -18,6 +18,7 @@ public class TabletInputMethodService extends InputMethodService {
 
     private static final String CHANNEL = "com.tabletkeyboard/tablet_ime";
     private static final String ENGINE_ID = "tablet_ime_engine";
+    private static final Object ENGINE_LOCK = new Object();
     
     private InputConnection inputConnection;
     private FlutterEngine flutterEngine;
@@ -29,14 +30,16 @@ public class TabletInputMethodService extends InputMethodService {
         super.onCreate();
         MainActivity.setImeService(this);
         
-        // Initialize Flutter engine
-        flutterEngine = FlutterEngineCache.getInstance().get(ENGINE_ID);
-        if (flutterEngine == null) {
-            flutterEngine = new FlutterEngine(this);
-            flutterEngine.getDartExecutor().executeDartEntrypoint(
-                DartExecutor.DartEntrypoint.createDefault()
-            );
-            FlutterEngineCache.getInstance().put(ENGINE_ID, flutterEngine);
+        // Initialize Flutter engine with thread safety
+        synchronized (ENGINE_LOCK) {
+            flutterEngine = FlutterEngineCache.getInstance().get(ENGINE_ID);
+            if (flutterEngine == null) {
+                flutterEngine = new FlutterEngine(this);
+                flutterEngine.getDartExecutor().executeDartEntrypoint(
+                    DartExecutor.DartEntrypoint.createDefault()
+                );
+                FlutterEngineCache.getInstance().put(ENGINE_ID, flutterEngine);
+            }
         }
         
         // Set up method channel
@@ -47,9 +50,10 @@ public class TabletInputMethodService extends InputMethodService {
         methodChannel.setMethodCallHandler((call, result) -> {
             switch (call.method) {
                 case "sendText":
+                case "commitText":
                     String text = call.argument("text");
                     if (text != null) {
-                        sendText(text);
+                        commitText(text);
                         result.success(null);
                     } else {
                         result.error("INVALID_ARGUMENT", "Text is null", null);
@@ -72,16 +76,6 @@ public class TabletInputMethodService extends InputMethodService {
                     result.success(null);
                     break;
                 
-                case "commitText":
-                    String commitText = call.argument("text");
-                    if (commitText != null) {
-                        commitText(commitText);
-                        result.success(null);
-                    } else {
-                        result.error("INVALID_ARGUMENT", "Text is null", null);
-                    }
-                    break;
-                
                 default:
                     result.notImplemented();
                     break;
@@ -91,6 +85,12 @@ public class TabletInputMethodService extends InputMethodService {
 
     @Override
     public View onCreateInputView() {
+        // Clean up previous view if exists
+        if (flutterView != null) {
+            flutterView.detachFromFlutterEngine();
+            flutterView = null;
+        }
+        
         // Create Flutter view for keyboard
         flutterView = new FlutterView(this);
         flutterView.attachToFlutterEngine(flutterEngine);
@@ -122,14 +122,10 @@ public class TabletInputMethodService extends InputMethodService {
     public void onDestroy() {
         if (flutterView != null) {
             flutterView.detachFromFlutterEngine();
+            flutterView = null;
         }
+        MainActivity.setImeService(null);
         super.onDestroy();
-    }
-
-    public void sendText(String text) {
-        if (inputConnection != null) {
-            inputConnection.commitText(text, 1);
-        }
     }
 
     public void deleteText() {
