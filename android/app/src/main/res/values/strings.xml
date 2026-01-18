@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tablet IME</string>
+    <string name="subtype_label_cn">中文 (简体)</string>
+    <string name="subtype_label_en">English</string>
+</resources>
