@@ -43,22 +43,6 @@ class KeyboardLayout extends StatelessWidget {
     );
   }
 
-  Widget _buildFunctionKeys(BuildContext context) {
-    return Row(
-      children: List.generate(12, (index) {
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: 'F${index + 1}',
-              onPressed: () => _handleFunctionKey(context, index + 1),
-              isSpecial: true,
-            ),
-          ),
-        );
-      }),
-    );
-  }
 
   Widget _buildNumberKeys(BuildContext context) {
     return Row(
@@ -353,26 +337,6 @@ class KeyboardLayout extends StatelessWidget {
     );
   }
 
-  void _handleFunctionKey(BuildContext context, int fKey) {
-    final state = context.read<KeyboardState>();
-    final service = context.read<KeyboardService>();
-    final keyCodes = {
-      1: 131,
-      2: 132,
-      3: 133,
-      4: 134,
-      5: 135,
-      6: 136,
-      7: 137,
-      8: 138,
-      9: 139,
-      10: 140,
-      11: 141,
-      12: 142,
-    };
-    service.sendKeyEvent(keyCodes[fKey]!, true);
-    service.sendKeyEvent(keyCodes[fKey]!, false);
-  }
 
   void _handleNumberKey(BuildContext context, String num) {
     final state = context.read<KeyboardState>();
