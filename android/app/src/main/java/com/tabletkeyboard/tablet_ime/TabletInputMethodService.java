@@ -30,19 +30,28 @@ public class TabletInputMethodService extends InputMethodService {
         super.onCreate();
         MainActivity.setImeService(this);
         
-        // Initialize Flutter engine with thread safety using application context
-        synchronized (ENGINE_LOCK) {
-            flutterEngine = FlutterEngineCache.getInstance().get(ENGINE_ID);
-            if (flutterEngine == null) {
-                flutterEngine = new FlutterEngine(getApplicationContext());
-                flutterEngine.getDartExecutor().executeDartEntrypoint(
-                    DartExecutor.DartEntrypoint.createDefault()
-                );
-                FlutterEngineCache.getInstance().put(ENGINE_ID, flutterEngine);
-            }
-        }
+        // Initialize Flutter engine
+        flutterEngine = getOrCreateFlutterEngine();
         
         // Set up method channel
+        setupMethodChannel();
+    }
+
+    private FlutterEngine getOrCreateFlutterEngine() {
+        synchronized (ENGINE_LOCK) {
+            FlutterEngine engine = FlutterEngineCache.getInstance().get(ENGINE_ID);
+            if (engine == null) {
+                engine = new FlutterEngine(getApplicationContext());
+                engine.getDartExecutor().executeDartEntrypoint(
+                    DartExecutor.DartEntrypoint.createDefault()
+                );
+                FlutterEngineCache.getInstance().put(ENGINE_ID, engine);
+            }
+            return engine;
+        }
+    }
+
+    private void setupMethodChannel() {
         methodChannel = new MethodChannel(
             flutterEngine.getDartExecutor().getBinaryMessenger(), 
             CHANNEL
@@ -123,6 +132,12 @@ public class TabletInputMethodService extends InputMethodService {
 
     @Override
     public void onDestroy() {
+        // Clean up method channel
+        if (methodChannel != null) {
+            methodChannel.setMethodCallHandler(null);
+        }
+        
+        // Clean up flutter view
         if (flutterView != null) {
             ViewGroup parent = (ViewGroup) flutterView.getParent();
             if (parent != null) {
@@ -131,6 +146,7 @@ public class TabletInputMethodService extends InputMethodService {
             flutterView.detachFromFlutterEngine();
             flutterView = null;
         }
+        
         MainActivity.setImeService(null);
         super.onDestroy();
     }
