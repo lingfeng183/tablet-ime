@@ -75,13 +75,13 @@ class KeyboardLayout extends StatelessWidget {
             ),
           );
         }),
-        const Expanded(
+        Expanded(
           flex: 2,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 2),
             child: KeyButton(
               label: 'Back',
-              onPressed: _handleBackspace,
+              onPressed: () => _handleBackspace(context),
               isSpecial: true,
             ),
           ),
@@ -159,7 +159,7 @@ class KeyboardLayout extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 2),
             child: KeyButton(
               label: 'Ctrl',
-              onPressed: _handleCtrl,
+              onPressed: () => _handleCtrl(context),
               isSpecial: true,
             ),
           ),
@@ -175,13 +175,13 @@ class KeyboardLayout extends StatelessWidget {
             ),
           ),
         ),
-        const Expanded(
+        Expanded(
           flex: 6,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 2),
             child: KeyButton(
               label: 'Space',
-              onPressed: _handleSpace,
+              onPressed: () => _handleSpace(context),
               isSpecial: true,
             ),
           ),
@@ -192,7 +192,7 @@ class KeyboardLayout extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 2),
             child: KeyButton(
               label: 'Alt',
-              onPressed: _handleAlt,
+              onPressed: () => _handleAlt(context),
               isSpecial: true,
             ),
           ),
@@ -404,7 +404,7 @@ class KeyboardLayout extends StatelessWidget {
     }
   }
 
-  void _handleBackspace() {
+  void _handleBackspace(BuildContext context) {
     final service = context.read<KeyboardService>();
     service.deleteText();
   }
@@ -413,17 +413,17 @@ class KeyboardLayout extends StatelessWidget {
     context.read<KeyboardState>().toggleLanguage();
   }
 
-  void _handleCtrl() {
+  void _handleCtrl(BuildContext context) {
     context.read<KeyboardService>().sendKeyEvent(113, true);
     context.read<KeyboardService>().sendKeyEvent(113, false);
   }
 
-  void _handleAlt() {
+  void _handleAlt(BuildContext context) {
     context.read<KeyboardService>().sendKeyEvent(57, true);
     context.read<KeyboardService>().sendKeyEvent(57, false);
   }
 
-  void _handleEsc() {
+  void _handleEsc(BuildContext context) {
     context.read<KeyboardService>().sendKeyEvent(111, true);
     context.read<KeyboardService>().sendKeyEvent(111, false);
   }
