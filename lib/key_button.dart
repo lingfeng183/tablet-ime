@@ -63,7 +63,7 @@ class _KeyButtonState extends State<KeyButton> {
           child: Text(
             widget.label,
             style: TextStyle(
-              color: _isPressed ? Colors.white : Colors.white,
+              color: Colors.white,
               fontSize: widget.label.length > 1 ? 14 : 20,
               fontWeight: _isPressed ? FontWeight.bold : FontWeight.normal,
             ),
