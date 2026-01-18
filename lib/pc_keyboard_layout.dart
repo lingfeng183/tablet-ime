@@ -131,7 +131,7 @@ class PCKeyboardLayout extends StatelessWidget {
     return Consumer<KeyboardState>(
       builder: (context, state, child) {
         final keys = state.shiftPressed
-            ? ['~', '!', '@', '#', '\$', '%', '^', '&', '*', '(', ')', '_', '+', 'Back']
+            ? ['~', '!', '@', '#', r'$', '%', '^', '&', '*', '(', ')', '_', '+', 'Back']
             : ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Back'];
         
         return Row(
