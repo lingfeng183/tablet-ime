@@ -132,8 +132,8 @@ public class TabletInputMethodService extends InputMethodService {
         
         // Check if landscape mode (width > height)
         boolean isLandscape = screenWidth > screenHeight;
-        // Use 35% in landscape, 40% in portrait
-        int keyboardHeight = (int) (screenHeight * (isLandscape ? 0.35 : 0.4));
+        // Use 50% in landscape, 55% in portrait to ensure all keys are visible
+        int keyboardHeight = (int) (screenHeight * (isLandscape ? 0.5 : 0.55));
         
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,

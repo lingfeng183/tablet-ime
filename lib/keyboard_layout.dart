@@ -13,8 +13,8 @@ class KeyboardLayout extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final isLandscape = size.width > size.height;
     final screenHeight = size.height;
-    // Use 35% in landscape, 40% in portrait for better fit
-    final keyboardHeight = isLandscape ? screenHeight * 0.35 : screenHeight * 0.4;
+    // Use 50% in landscape, 55% in portrait to ensure all keys are visible
+    final keyboardHeight = isLandscape ? screenHeight * 0.5 : screenHeight * 0.55;
     
     return Container(
       height: keyboardHeight,
@@ -24,8 +24,6 @@ class KeyboardLayout extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildCandidateBar(context),
-            const SizedBox(height: 4),
-            _buildFunctionKeys(context),
             const SizedBox(height: 4),
             _buildNumberKeys(context),
             const SizedBox(height: 4),
@@ -38,6 +36,7 @@ class KeyboardLayout extends StatelessWidget {
             _buildSpaceRow(context),
             const SizedBox(height: 4),
             _buildSpecialKeys(context),
+            const SizedBox(height: 4),
           ],
         ),
       ),
