@@ -52,13 +52,13 @@ class KeyboardLayout extends StatelessWidget {
   Widget _buildNumberKeys(BuildContext context) {
     return Row(
       children: [
-        const Expanded(
+        Expanded(
           flex: 2,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 2),
             child: KeyButton(
               label: 'ESC',
-              onPressed: _handleEsc,
+              onPressed: () => _handleEsc(context),
               isSpecial: true,
             ),
           ),
