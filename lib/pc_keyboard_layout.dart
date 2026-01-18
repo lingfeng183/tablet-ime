@@ -49,28 +49,39 @@ class PCKeyboardLayout extends StatelessWidget {
         // Show pinyin buffer if in Chinese mode and typing
         if (state.isChinese && state.currentPinyin.isNotEmpty && state.candidates.isEmpty) {
           return Container(
-            height: 38,
+            height: 46,
             margin: const EdgeInsets.symmetric(horizontal: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
             decoration: BoxDecoration(
               color: const Color(0xFF2D2D2D),
               borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.blue.withOpacity(0.3), width: 1),
             ),
             child: Row(
               children: [
+                const Icon(Icons.edit, color: Colors.blue, size: 17),
+                const SizedBox(width: 8),
                 Text(
                   '拼音: ${state.currentPinyin}',
                   style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 15,
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(width: 8),
-                const Text(
-                  '(按空格显示候选)',
-                  style: TextStyle(
-                    color: Colors.white38,
-                    fontSize: 11,
+                const SizedBox(width: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    '按空格显示候选',
+                    style: TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: 11,
+                    ),
                   ),
                 ),
               ],
@@ -83,43 +94,72 @@ class PCKeyboardLayout extends StatelessWidget {
           return const SizedBox.shrink();
         }
         return Container(
-          height: 45,
+          height: 54,
           margin: const EdgeInsets.symmetric(horizontal: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: const Color(0xFF2D2D2D),
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.blue.withOpacity(0.4), width: 1.5),
           ),
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: state.candidates.length,
-            itemBuilder: (context, index) {
-              final isSelected = index == state.selectedCandidateIndex;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: GestureDetector(
-                  onTap: () {
-                    // Directly select the candidate on click (Sogou behavior)
-                    _handleCandidateSelect(context, index);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue : Colors.transparent,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '${index + 1}.${state.candidates[index]}',
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.white70,
-                        fontSize: 16,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          child: Row(
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(right: 12),
+                child: Icon(Icons.text_fields, color: Colors.blue, size: 19),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.candidates.length,
+                  itemBuilder: (context, index) {
+                    final isSelected = index == state.selectedCandidateIndex;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: GestureDetector(
+                        onTap: () {
+                          // Directly select the candidate on click (Sogou behavior)
+                          _handleCandidateSelect(context, index);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.blue : Colors.transparent,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: isSelected ? Colors.blue : Colors.white24,
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '${index + 1}.',
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : Colors.white38,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                state.candidates[index],
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : Colors.white,
+                                  fontSize: 19,
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ],
           ),
         );
       },
