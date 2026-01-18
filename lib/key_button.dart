@@ -28,27 +28,42 @@ class _KeyButtonState extends State<KeyButton> {
         widget.onPressed();
       },
       onTapCancel: () => setState(() => _isPressed = false),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
         height: 55,
         decoration: BoxDecoration(
           color: _isPressed
-              ? Colors.blue.withOpacity(0.6)
+              ? Colors.blue.withOpacity(0.8)
               : (widget.isSpecial
                   ? const Color(0xFF3D3D3D)
                   : const Color(0xFF4D4D4D)),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: widget.isSpecial
-                ? const Color(0xFF555555)
-                : const Color(0xFF666666),
-            width: 1,
+            color: _isPressed
+                ? Colors.blueAccent
+                : (widget.isSpecial
+                    ? const Color(0xFF555555)
+                    : const Color(0xFF666666)),
+            width: _isPressed ? 2 : 1,
           ),
+          boxShadow: _isPressed
+              ? [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.5),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : [],
         ),
+        transform: _isPressed
+            ? (Matrix4.identity()..scale(0.95))
+            : Matrix4.identity(),
         child: Center(
           child: Text(
             widget.label,
             style: TextStyle(
-              color: Colors.white,
+              color: _isPressed ? Colors.white : Colors.white,
               fontSize: widget.label.length > 1 ? 14 : 20,
               fontWeight: _isPressed ? FontWeight.bold : FontWeight.normal,
             ),

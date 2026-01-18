@@ -107,27 +107,33 @@ public class TabletInputMethodService extends InputMethodService {
         flutterView = new FlutterView(this);
         flutterView.attachToFlutterEngine(flutterEngine);
         
-        // Wrap in a container with constrained height (40% of screen height)
+        // Wrap in a container with constrained height
         FrameLayout container = new FrameLayout(this);
         
-        // Get screen height using WindowManager
+        // Get screen dimensions using WindowManager
         android.view.WindowManager wm = (android.view.WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        int screenWidth;
         int screenHeight;
         
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             // Use WindowMetrics for API 30+
             android.view.WindowMetrics windowMetrics = wm.getCurrentWindowMetrics();
             android.graphics.Rect bounds = windowMetrics.getBounds();
+            screenWidth = bounds.width();
             screenHeight = bounds.height();
         } else {
             // Use deprecated getSize for older APIs
             android.view.Display display = wm.getDefaultDisplay();
             android.graphics.Point size = new android.graphics.Point();
             display.getSize(size);
+            screenWidth = size.x;
             screenHeight = size.y;
         }
         
-        int keyboardHeight = (int) (screenHeight * 0.4); // 40% of screen height
+        // Check if landscape mode (width > height)
+        boolean isLandscape = screenWidth > screenHeight;
+        // Use 35% in landscape, 40% in portrait
+        int keyboardHeight = (int) (screenHeight * (isLandscape ? 0.35 : 0.4));
         
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,

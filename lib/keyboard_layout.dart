@@ -9,32 +9,37 @@ class KeyboardLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen height to calculate appropriate keyboard height
-    final screenHeight = MediaQuery.of(context).size.height;
-    final keyboardHeight = screenHeight * 0.4; // Use 40% of screen height
+    // Get screen dimensions to calculate appropriate keyboard height
+    final size = MediaQuery.of(context).size;
+    final isLandscape = size.width > size.height;
+    final screenHeight = size.height;
+    // Use 35% in landscape, 40% in portrait for better fit
+    final keyboardHeight = isLandscape ? screenHeight * 0.35 : screenHeight * 0.4;
     
     return Container(
       height: keyboardHeight,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildFunctionKeys(context),
-          const SizedBox(height: 4),
-          _buildNumberKeys(context),
-          const SizedBox(height: 4),
-          _buildTopRow(context),
-          const SizedBox(height: 4),
-          _buildHomeRow(context),
-          const SizedBox(height: 4),
-          _buildBottomRow(context),
-          const SizedBox(height: 4),
-          _buildSpaceRow(context),
-          const SizedBox(height: 4),
-          _buildSpecialKeys(context),
-          const SizedBox(height: 4),
-          _buildCandidateBar(context),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildCandidateBar(context),
+            const SizedBox(height: 4),
+            _buildFunctionKeys(context),
+            const SizedBox(height: 4),
+            _buildNumberKeys(context),
+            const SizedBox(height: 4),
+            _buildTopRow(context),
+            const SizedBox(height: 4),
+            _buildHomeRow(context),
+            const SizedBox(height: 4),
+            _buildBottomRow(context),
+            const SizedBox(height: 4),
+            _buildSpaceRow(context),
+            const SizedBox(height: 4),
+            _buildSpecialKeys(context),
+          ],
+        ),
       ),
     );
   }
@@ -214,11 +219,14 @@ class KeyboardLayout extends StatelessWidget {
         return Row(
           children: [
             Expanded(
+              flex: 2,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2),
                 child: KeyButton(
-                  label: state.isFloating ? '📌' : '🪟',
-                  onPressed: () => state.toggleFloating(),
+                  label: state.isFloating ? '固定' : '悬浮',
+                  onPressed: () {
+                    state.toggleFloating();
+                  },
                   isSpecial: true,
                 ),
               ),
