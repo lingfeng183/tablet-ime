@@ -18,6 +18,10 @@ class KeyboardState extends ChangeNotifier {
   String get currentPinyin => _currentPinyin;
   List<String> get candidates => _candidates;
   int get selectedCandidateIndex => _selectedCandidateIndex;
+  set selectedCandidateIndex(int value) {
+    _selectedCandidateIndex = value;
+    notifyListeners();
+  }
   bool get isFloating => _isFloating;
   Offset get floatingPosition => _floatingPosition;
   double get floatingWidth => _floatingWidth;
