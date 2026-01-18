@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tablet_ime/keyboard_state.dart';
 import 'package:tablet_ime/keyboard_layout.dart';
+import 'package:tablet_ime/pc_keyboard_layout.dart';
 
 class FloatingKeyboard extends StatelessWidget {
   const FloatingKeyboard({super.key});
@@ -10,11 +11,16 @@ class FloatingKeyboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<KeyboardState>(
       builder: (context, state, child) {
+        // 选择键盘布局
+        final keyboardWidget = state.isFullPCLayout 
+            ? const PCKeyboardLayout() 
+            : const KeyboardLayout();
+            
         if (!state.isFloating) {
           // Fixed mode - show normal keyboard
-          return const Scaffold(
-            backgroundColor: Color(0xFF1E1E1E),
-            body: KeyboardLayout(),
+          return Scaffold(
+            backgroundColor: const Color(0xFF1E1E1E),
+            body: keyboardWidget,
           );
         }
 
@@ -68,11 +74,13 @@ class FloatingKeyboard extends StatelessWidget {
                                 color: Colors.grey,
                                 size: 20,
                               ),
-                              const Expanded(
+                              Expanded(
                                 child: Center(
                                   child: Text(
-                                    'Tablet IME - 拖动移动',
-                                    style: TextStyle(
+                                    state.isFullPCLayout 
+                                        ? 'PC完整键盘 - 拖动移动' 
+                                        : 'Tablet IME - 拖动移动',
+                                    style: const TextStyle(
                                       color: Colors.white70,
                                       fontSize: 12,
                                     ),
@@ -102,7 +110,7 @@ class FloatingKeyboard extends StatelessWidget {
                               bottomLeft: Radius.circular(12),
                               bottomRight: Radius.circular(12),
                             ),
-                            child: const KeyboardLayout(),
+                            child: keyboardWidget,
                           ),
                         ),
                       ],

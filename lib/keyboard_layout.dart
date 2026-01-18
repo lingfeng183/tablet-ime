@@ -206,6 +206,19 @@ class KeyboardLayout extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2),
                 child: KeyButton(
+                  label: 'PC全键',
+                  onPressed: () {
+                    state.togglePCLayout();
+                  },
+                  isSpecial: true,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
                   label: state.isFloating ? '固定' : '悬浮',
                   onPressed: () {
                     state.toggleFloating();

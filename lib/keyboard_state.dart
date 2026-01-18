@@ -9,6 +9,10 @@ class KeyboardState extends ChangeNotifier {
   Offset _floatingPosition = const Offset(20, 100);
   double _floatingWidth = 600;
   double _floatingHeight = 300;
+  bool _isFullPCLayout = true; // PC完整布局模式，默认开启
+  bool _shiftPressed = false;
+  bool _ctrlPressed = false;
+  bool _altPressed = false;
 
   bool get isChinese => _isChinese;
   String get currentPinyin => _currentPinyin;
@@ -18,6 +22,30 @@ class KeyboardState extends ChangeNotifier {
   Offset get floatingPosition => _floatingPosition;
   double get floatingWidth => _floatingWidth;
   double get floatingHeight => _floatingHeight;
+  bool get isFullPCLayout => _isFullPCLayout;
+  bool get shiftPressed => _shiftPressed;
+  bool get ctrlPressed => _ctrlPressed;
+  bool get altPressed => _altPressed;
+
+  void togglePCLayout() {
+    _isFullPCLayout = !_isFullPCLayout;
+    notifyListeners();
+  }
+
+  void setShiftPressed(bool pressed) {
+    _shiftPressed = pressed;
+    notifyListeners();
+  }
+
+  void setCtrlPressed(bool pressed) {
+    _ctrlPressed = pressed;
+    notifyListeners();
+  }
+
+  void setAltPressed(bool pressed) {
+    _altPressed = pressed;
+    notifyListeners();
+  }
 
   void toggleFloating() {
     _isFloating = !_isFloating;
