@@ -302,6 +302,39 @@ class KeyboardLayout extends StatelessWidget {
   Widget _buildCandidateBar(BuildContext context) {
     return Consumer<KeyboardState>(
       builder: (context, state, child) {
+        // Show pinyin buffer if in Chinese mode and typing
+        if (state.isChinese && state.currentPinyin.isNotEmpty && state.candidates.isEmpty) {
+          return Container(
+            height: 40,
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2D2D2D),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  '拼音: ${state.currentPinyin}',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  '(按空格显示候选)',
+                  style: TextStyle(
+                    color: Colors.white38,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        
+        // Show candidates if available
         if (!state.isChinese || state.candidates.isEmpty) {
           return const SizedBox.shrink();
         }
@@ -322,8 +355,8 @@ class KeyboardLayout extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: GestureDetector(
                   onTap: () {
-                    // Update selection index instead of directly selecting
-                    state.selectedCandidateIndex = index;
+                    // Directly select the candidate on click (Sogou behavior)
+                    _handleCandidateSelect(context, index);
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -408,17 +441,38 @@ class KeyboardLayout extends StatelessWidget {
     final state = context.read<KeyboardState>();
     final service = context.read<KeyboardService>();
     
-    if (state.isChinese && state.candidates.isNotEmpty) {
-      service.commitText(state.candidates[state.selectedCandidateIndex]);
-      state.clearPinyin();
+    if (state.isChinese) {
+      if (state.currentPinyin.isNotEmpty && state.candidates.isEmpty) {
+        // Has pinyin but no candidates yet - show candidates (Sogou behavior)
+        state.showCandidates();
+      } else if (state.candidates.isNotEmpty) {
+        // Has candidates - select current one
+        service.commitText(state.candidates[state.selectedCandidateIndex]);
+        state.clearPinyin();
+      } else {
+        // No pinyin, just insert space
+        service.commitText(' ');
+      }
     } else {
       service.commitText(' ');
     }
   }
 
   void _handleBackspace(BuildContext context) {
+    final state = context.read<KeyboardState>();
     final service = context.read<KeyboardService>();
-    service.deleteText();
+    
+    if (state.isChinese && state.currentPinyin.isNotEmpty) {
+      // In Chinese mode with pinyin, delete from pinyin buffer first
+      if (state.currentPinyin.length > 1) {
+        state.updatePinyin(state.currentPinyin.substring(0, state.currentPinyin.length - 1));
+      } else {
+        state.clearPinyin();
+      }
+    } else {
+      // No pinyin or in English mode, delete from text field
+      service.deleteText();
+    }
   }
 
   void _handleLanguageSwitch(BuildContext context) {

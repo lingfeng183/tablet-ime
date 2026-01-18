@@ -77,9 +77,19 @@ class KeyboardState extends ChangeNotifier {
 
   void updatePinyin(String pinyin) {
     _currentPinyin = pinyin;
-    _candidates = _generateCandidates(pinyin);
+    // Don't generate candidates automatically - wait for Space key
+    _candidates = [];
     _selectedCandidateIndex = 0;
     notifyListeners();
+  }
+
+  void showCandidates() {
+    // Generate candidates when Space is pressed
+    if (_currentPinyin.isNotEmpty) {
+      _candidates = _generateCandidates(_currentPinyin);
+      _selectedCandidateIndex = 0;
+      notifyListeners();
+    }
   }
 
   List<String> _generateCandidates(String pinyin) {
@@ -102,36 +112,32 @@ class KeyboardState extends ChangeNotifier {
   }
 
   static final Map<String, List<String>> _pinyinToChinese = {
+    // Multi-character pinyin
     'nihao': ['你好', '尼豪', '泥好'],
     'zhong': ['中', '重', '钟', '忠'],
     'guo': ['国', '过', '果', '锅'],
     'wen': ['文', '问', '闻', '稳'],
     'shu': ['书', '输', '树', '数'],
-    'p': ['p', 'P'],
-    'q': ['q', 'Q'],
-    'w': ['w', 'W'],
-    'e': ['e', 'E'],
-    'r': ['r', 'R'],
-    't': ['t', 'T'],
-    'y': ['y', 'Y'],
-    'u': ['u', 'U'],
-    'i': ['i', 'I'],
-    'o': ['o', 'O'],
-    'a': ['a', 'A', '啊'],
-    's': ['s', 'S'],
-    'd': ['d', 'D'],
-    'f': ['f', 'F'],
-    'g': ['g', 'G'],
-    'h': ['h', 'H'],
-    'j': ['j', 'J'],
-    'k': ['k', 'K'],
-    'l': ['l', 'L'],
-    'z': ['z', 'Z'],
-    'x': ['x', 'X'],
-    'c': ['c', 'C'],
-    'v': ['v', 'V'],
-    'b': ['b', 'B'],
-    'n': ['n', 'N'],
-    'm': ['m', 'M'],
+    'ni': ['你', '尼', '泥', '逆'],
+    'wo': ['我', '握', '沃'],
+    'ta': ['他', '她', '它', '塔'],
+    'de': ['的', '得', '德'],
+    'shi': ['是', '时', '事', '十'],
+    'zhe': ['这', '者', '着'],
+    'you': ['有', '又', '右'],
+    'bu': ['不', '步', '布'],
+    'zai': ['在', '再', '载'],
+    'ren': ['人', '任', '仁'],
+    'le': ['了', '乐', '勒'],
+    'shang': ['上', '商', '伤'],
+    'xia': ['下', '夏', '侠'],
+    'hui': ['会', '回', '汇'],
+    'ke': ['可', '课', '克'],
+    'yi': ['一', '已', '意', '以'],
+    'hao': ['好', '号', '毫'],
+    'dao': ['到', '道', '倒'],
+    'geng': ['更', '耕', '庚'],
+    'lai': ['来', '莱', '赖'],
+    // Add more common pinyin combinations as needed
   };
 }

@@ -46,6 +46,39 @@ class PCKeyboardLayout extends StatelessWidget {
   Widget _buildCandidateBar(BuildContext context) {
     return Consumer<KeyboardState>(
       builder: (context, state, child) {
+        // Show pinyin buffer if in Chinese mode and typing
+        if (state.isChinese && state.currentPinyin.isNotEmpty && state.candidates.isEmpty) {
+          return Container(
+            height: 38,
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2D2D2D),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  '拼音: ${state.currentPinyin}',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  '(按空格显示候选)',
+                  style: TextStyle(
+                    color: Colors.white38,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        
+        // Show candidates if available
         if (!state.isChinese || state.candidates.isEmpty) {
           return const SizedBox.shrink();
         }
@@ -66,8 +99,8 @@ class PCKeyboardLayout extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: GestureDetector(
                   onTap: () {
-                    // Update selection index instead of directly selecting
-                    state.selectedCandidateIndex = index;
+                    // Directly select the candidate on click (Sogou behavior)
+                    _handleCandidateSelect(context, index);
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -593,8 +626,17 @@ class PCKeyboardLayout extends StatelessWidget {
         }
         break;
       case 'Space':
-        if (state.isChinese && state.candidates.isNotEmpty) {
-          _handleCandidateSelect(context, state.selectedCandidateIndex);
+        if (state.isChinese) {
+          if (state.currentPinyin.isNotEmpty && state.candidates.isEmpty) {
+            // Has pinyin but no candidates yet - show candidates (Sogou behavior)
+            state.showCandidates();
+          } else if (state.candidates.isNotEmpty) {
+            // Has candidates - select current one
+            _handleCandidateSelect(context, state.selectedCandidateIndex);
+          } else {
+            // No pinyin, just insert space
+            service.commitText(' ');
+          }
         } else {
           service.commitText(' ');
         }
@@ -602,10 +644,16 @@ class PCKeyboardLayout extends StatelessWidget {
       case 'Back':
       case 'Del':
         if (state.isChinese && state.currentPinyin.isNotEmpty) {
-          state.updatePinyin(
-            state.currentPinyin.substring(0, state.currentPinyin.length - 1),
-          );
+          // In Chinese mode with pinyin, delete from pinyin buffer first
+          if (state.currentPinyin.length > 1) {
+            state.updatePinyin(
+              state.currentPinyin.substring(0, state.currentPinyin.length - 1),
+            );
+          } else {
+            state.clearPinyin();
+          }
         } else {
+          // No pinyin or in English mode, delete from text field
           service.deleteText();
         }
         break;
