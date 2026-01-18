@@ -34,7 +34,7 @@ jobs:
       run: flutter build apk --release --target-platform android-arm64
     
     - name: 上传 APK (ARM64)
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: app-release-arm64
         path: build/app/outputs/flutter-apk/app-release.apk
@@ -44,7 +44,7 @@ jobs:
       run: flutter build apk --release
     
     - name: 上传 APK (Universal)
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: app-release-universal
         path: build/app/outputs/flutter-apk/app-release.apk
