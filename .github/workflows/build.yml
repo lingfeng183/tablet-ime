@@ -1,0 +1,59 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: '构建原因'
+        required: false
+        default: '手动构建'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v3
+    
+    - name: 设置 Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        cache: true
+    
+    - name: 检查 Flutter 环境
+      run: flutter doctor -v
+    
+    - name: 获取依赖
+      run: flutter pub get
+    
+    - name: 构建 APK (Release)
+      run: flutter build apk --release --target-platform android-arm64
+    
+    - name: 上传 APK (ARM64)
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-release-arm64
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
+    
+    - name: 构建 APK (Universal)
+      run: flutter build apk --release
+    
+    - name: 上传 APK (Universal)
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-release-universal
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
+    
+    - name: 显示 APK 信息
+      run: |
+        echo "=== ARM64 APK ==="
+        ls -lh build/app/outputs/flutter-apk/app-release.apk || true
+        echo ""
+        echo "=== Universal APK ==="
+        ls -lh build/app/outputs/flutter-apk/app-release.apk || true
