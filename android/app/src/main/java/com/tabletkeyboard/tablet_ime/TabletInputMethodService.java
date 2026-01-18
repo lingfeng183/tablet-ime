@@ -107,11 +107,20 @@ public class TabletInputMethodService extends InputMethodService {
         flutterView = new FlutterView(this);
         flutterView.attachToFlutterEngine(flutterEngine);
         
-        // Wrap in a container with proper layout params
+        // Wrap in a container with constrained height (40% of screen height)
         FrameLayout container = new FrameLayout(this);
+        
+        // Get screen height
+        android.view.WindowManager wm = (android.view.WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        android.view.Display display = wm.getDefaultDisplay();
+        android.graphics.Point size = new android.graphics.Point();
+        display.getSize(size);
+        int screenHeight = size.y;
+        int keyboardHeight = (int) (screenHeight * 0.4); // 40% of screen height
+        
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
+            keyboardHeight
         );
         container.addView(flutterView, params);
         

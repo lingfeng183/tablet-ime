@@ -9,26 +9,33 @@ class KeyboardLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Spacer(),
-        _buildFunctionKeys(context),
-        const SizedBox(height: 8),
-        _buildNumberKeys(context),
-        const SizedBox(height: 8),
-        _buildTopRow(context),
-        const SizedBox(height: 8),
-        _buildHomeRow(context),
-        const SizedBox(height: 8),
-        _buildBottomRow(context),
-        const SizedBox(height: 8),
-        _buildSpaceRow(context),
-        const SizedBox(height: 8),
-        _buildSpecialKeys(context),
-        const SizedBox(height: 8),
-        _buildCandidateBar(context),
-        const SizedBox(height: 16),
-      ],
+    // Get screen height to calculate appropriate keyboard height
+    final screenHeight = MediaQuery.of(context).size.height;
+    final keyboardHeight = screenHeight * 0.4; // Use 40% of screen height
+    
+    return Container(
+      height: keyboardHeight,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildFunctionKeys(context),
+          const SizedBox(height: 4),
+          _buildNumberKeys(context),
+          const SizedBox(height: 4),
+          _buildTopRow(context),
+          const SizedBox(height: 4),
+          _buildHomeRow(context),
+          const SizedBox(height: 4),
+          _buildBottomRow(context),
+          const SizedBox(height: 4),
+          _buildSpaceRow(context),
+          const SizedBox(height: 4),
+          _buildSpecialKeys(context),
+          const SizedBox(height: 4),
+          _buildCandidateBar(context),
+        ],
+      ),
     );
   }
 
