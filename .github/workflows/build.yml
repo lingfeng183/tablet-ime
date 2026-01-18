@@ -1,4 +1,5 @@
 name: Build APK
+# Workflow builds APK for Android devices
 
 on:
   push:
