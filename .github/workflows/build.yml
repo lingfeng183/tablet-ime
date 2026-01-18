@@ -1,7 +1,10 @@
 name: Build APK
+# Workflow builds APK for Android devices
 
 on:
   push:
+    branches: [ main, master ]
+  pull_request:
     branches: [ main, master ]
   workflow_dispatch:
     inputs:
@@ -31,29 +34,16 @@ jobs:
       run: flutter pub get
     
     - name: 构建 APK (Release)
-      run: flutter build apk --release --android-skip-build-dependency-validation
-    
-    - name: 上传 APK (ARM64)
-      uses: actions/upload-artifact@v6
-      with:
-        name: app-release-arm64
-        path: build/app/outputs/flutter-apk/app-release.apk
-        retention-days: 30
-    
-    - name: 构建 APK (Universal)
       run: flutter build apk --release
     
-    - name: 上传 APK (Universal)
+    - name: 上传 APK
       uses: actions/upload-artifact@v6
       with:
-        name: app-release-universal
+        name: app-release
         path: build/app/outputs/flutter-apk/app-release.apk
         retention-days: 30
     
     - name: 显示 APK 信息
       run: |
-        echo "=== ARM64 APK ==="
-        ls -lh build/app/outputs/flutter-apk/app-release.apk || true
-        echo ""
-        echo "=== Universal APK ==="
+        echo "=== APK 构建成功 ==="
         ls -lh build/app/outputs/flutter-apk/app-release.apk || true

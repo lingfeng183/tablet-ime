@@ -9,45 +9,36 @@ class KeyboardLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Spacer(),
-        _buildFunctionKeys(context),
-        const SizedBox(height: 8),
-        _buildNumberKeys(context),
-        const SizedBox(height: 8),
-        _buildTopRow(context),
-        const SizedBox(height: 8),
-        _buildHomeRow(context),
-        const SizedBox(height: 8),
-        _buildBottomRow(context),
-        const SizedBox(height: 8),
-        _buildSpaceRow(context),
-        const SizedBox(height: 8),
-        _buildSpecialKeys(context),
-        const SizedBox(height: 8),
-        _buildCandidateBar(context),
-        const SizedBox(height: 16),
-      ],
+    return Container(
+      // Fill available space provided by Android IME service
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      decoration: const BoxDecoration(
+        color: Color(0xFF1E1E1E), // Dark background to prevent transparency
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildCandidateBar(context),
+            const SizedBox(height: 4),
+            _buildNumberKeys(context),
+            const SizedBox(height: 4),
+            _buildTopRow(context),
+            const SizedBox(height: 4),
+            _buildHomeRow(context),
+            const SizedBox(height: 4),
+            _buildBottomRow(context),
+            const SizedBox(height: 4),
+            _buildSpaceRow(context),
+            const SizedBox(height: 4),
+            _buildSpecialKeys(context),
+            const SizedBox(height: 4),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildFunctionKeys(BuildContext context) {
-    return Row(
-      children: List.generate(12, (index) {
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: 'F${index + 1}',
-              onPressed: () => _handleFunctionKey(context, index + 1),
-              isSpecial: true,
-            ),
-          ),
-        );
-      }),
-    );
-  }
 
   Widget _buildNumberKeys(BuildContext context) {
     return Row(
@@ -202,156 +193,281 @@ class KeyboardLayout extends StatelessWidget {
   }
 
   Widget _buildSpecialKeys(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: '↑',
-              onPressed: () => _handleDirectionKey(context, 'ArrowUp'),
-              isSpecial: true,
+    return Consumer<KeyboardState>(
+      builder: (context, state, child) {
+        return Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: 'PC全键',
+                  onPressed: () {
+                    state.togglePCLayout();
+                  },
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: '←',
-              onPressed: () => _handleDirectionKey(context, 'ArrowLeft'),
-              isSpecial: true,
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: state.isFloating ? '固定' : '悬浮',
+                  onPressed: () {
+                    state.toggleFloating();
+                  },
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: '↓',
-              onPressed: () => _handleDirectionKey(context, 'ArrowDown'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: '↑',
+                  onPressed: () => _handleDirectionKey(context, 'ArrowUp'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: '→',
-              onPressed: () => _handleDirectionKey(context, 'ArrowRight'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: '←',
+                  onPressed: () => _handleDirectionKey(context, 'ArrowLeft'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: 'Home',
-              onPressed: () => _handleSystemKey(context, 'Home'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: '↓',
+                  onPressed: () => _handleDirectionKey(context, 'ArrowDown'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: 'End',
-              onPressed: () => _handleSystemKey(context, 'End'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: '→',
+                  onPressed: () => _handleDirectionKey(context, 'ArrowRight'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: 'Ins',
-              onPressed: () => _handleSystemKey(context, 'Insert'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: 'Home',
+                  onPressed: () => _handleSystemKey(context, 'Home'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: 'End',
+                  onPressed: () => _handleSystemKey(context, 'End'),
+                  isSpecial: true,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: 'Ins',
+                  onPressed: () => _handleSystemKey(context, 'Insert'),
+                  isSpecial: true,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
   Widget _buildCandidateBar(BuildContext context) {
     return Consumer<KeyboardState>(
       builder: (context, state, child) {
-        if (!state.isChinese || state.candidates.isEmpty) {
+        // Show candidates in real-time if in Chinese mode with pinyin
+        if (!state.isChinese || (state.currentPinyin.isEmpty && state.candidates.isEmpty)) {
           return const SizedBox.shrink();
         }
-        return Container(
-          height: 50,
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFF2D2D2D),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: state.candidates.length,
-            itemBuilder: (context, index) {
-              final isSelected = index == state.selectedCandidateIndex;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: GestureDetector(
-                  onTap: () => _handleCandidateSelect(context, index),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue : Colors.transparent,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '${index + 1}.${state.candidates[index]}',
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.white70,
-                        fontSize: 18,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
+        
+        // Show pinyin composition with real-time candidates
+        if (state.candidates.isEmpty) {
+          // No matches found for current pinyin
+          return Container(
+            height: 48,
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2D2D2D),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.orange.withOpacity(0.5), width: 1),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.edit, color: Colors.orange, size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  '拼音: ${state.currentPinyin}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    '无匹配',
+                    style: TextStyle(
+                      color: Colors.orangeAccent,
+                      fontSize: 12,
                     ),
                   ),
                 ),
-              );
-            },
+              ],
+            ),
+          );
+        }
+        
+        // Show candidates with pinyin composition at top
+        return Container(
+          height: 58,
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: const Color(0xFF2D2D2D),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.blue.withOpacity(0.4), width: 1.5),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Pinyin composition line
+              if (state.currentPinyin.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.edit, color: Colors.blue, size: 14),
+                      const SizedBox(width: 6),
+                      Text(
+                        state.currentPinyin,
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              // Candidates line
+              Expanded(
+                child: Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: Icon(Icons.text_fields, color: Colors.green, size: 18),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.candidates.length > 9 ? 9 : state.candidates.length,
+                        itemBuilder: (context, index) {
+                          final isSelected = index == state.selectedCandidateIndex;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: GestureDetector(
+                              onTap: () {
+                                // Directly select the candidate on click
+                                _handleCandidateSelect(context, index);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: isSelected ? Colors.blue : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: isSelected ? Colors.blue : Colors.white24,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '${index + 1}.',
+                                      style: TextStyle(
+                                        color: isSelected ? Colors.white : Colors.white54,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      state.candidates[index],
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       },
     );
   }
 
-  void _handleFunctionKey(BuildContext context, int fKey) {
-    final state = context.read<KeyboardState>();
-    final service = context.read<KeyboardService>();
-    final keyCodes = {
-      1: 131,
-      2: 132,
-      3: 133,
-      4: 134,
-      5: 135,
-      6: 136,
-      7: 137,
-      8: 138,
-      9: 139,
-      10: 140,
-      11: 141,
-      12: 142,
-    };
-    service.sendKeyEvent(keyCodes[fKey]!, true);
-    service.sendKeyEvent(keyCodes[fKey]!, false);
-  }
 
   void _handleNumberKey(BuildContext context, String num) {
     final state = context.read<KeyboardState>();
-    if (state.isChinese) {
+    if (state.isChinese && state.candidates.isNotEmpty) {
+      // In Chinese mode with candidates, number keys select candidates
+      final index = int.parse(num) - 1; // Convert 1-9 to 0-8 index
+      if (index >= 0 && index < state.candidates.length) {
+        _handleCandidateSelect(context, index);
+      }
+    } else if (state.isChinese) {
+      // In Chinese mode without candidates, add to pinyin
       state.updatePinyin(state.currentPinyin + num.toLowerCase());
     } else {
-      context.read<KeyboardService>().sendText(num);
+      // In English mode, just type the number
+      context.read<KeyboardService>().commitText(num);
     }
   }
 
@@ -386,7 +502,7 @@ class KeyboardLayout extends StatelessWidget {
           if (state.isChinese) {
             state.updatePinyin(state.currentPinyin + key.toLowerCase());
           } else {
-            service.sendText(key);
+            service.commitText(key);
           }
         }
     }
@@ -396,17 +512,38 @@ class KeyboardLayout extends StatelessWidget {
     final state = context.read<KeyboardState>();
     final service = context.read<KeyboardService>();
     
-    if (state.isChinese && state.candidates.isNotEmpty) {
-      service.commitText(state.candidates[state.selectedCandidateIndex]);
-      state.clearPinyin();
+    if (state.isChinese) {
+      if (state.currentPinyin.isNotEmpty && state.candidates.isEmpty) {
+        // Has pinyin but no candidates yet - show candidates (Sogou behavior)
+        state.showCandidates();
+      } else if (state.candidates.isNotEmpty) {
+        // Has candidates - select current one
+        service.commitText(state.candidates[state.selectedCandidateIndex]);
+        state.clearPinyin();
+      } else {
+        // No pinyin, just insert space
+        service.commitText(' ');
+      }
     } else {
-      service.sendText(' ');
+      service.commitText(' ');
     }
   }
 
   void _handleBackspace(BuildContext context) {
+    final state = context.read<KeyboardState>();
     final service = context.read<KeyboardService>();
-    service.deleteText();
+    
+    if (state.isChinese && state.currentPinyin.isNotEmpty) {
+      // In Chinese mode with pinyin, delete from pinyin buffer first
+      if (state.currentPinyin.length > 1) {
+        state.updatePinyin(state.currentPinyin.substring(0, state.currentPinyin.length - 1));
+      } else {
+        state.clearPinyin();
+      }
+    } else {
+      // No pinyin or in English mode, delete from text field
+      service.deleteText();
+    }
   }
 
   void _handleLanguageSwitch(BuildContext context) {
