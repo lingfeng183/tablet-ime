@@ -110,12 +110,23 @@ public class TabletInputMethodService extends InputMethodService {
         // Wrap in a container with constrained height (40% of screen height)
         FrameLayout container = new FrameLayout(this);
         
-        // Get screen height
+        // Get screen height using WindowManager
         android.view.WindowManager wm = (android.view.WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        android.view.Display display = wm.getDefaultDisplay();
-        android.graphics.Point size = new android.graphics.Point();
-        display.getSize(size);
-        int screenHeight = size.y;
+        int screenHeight;
+        
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            // Use WindowMetrics for API 30+
+            android.view.WindowMetrics windowMetrics = wm.getCurrentWindowMetrics();
+            android.graphics.Rect bounds = windowMetrics.getBounds();
+            screenHeight = bounds.height();
+        } else {
+            // Use deprecated getSize for older APIs
+            android.view.Display display = wm.getDefaultDisplay();
+            android.graphics.Point size = new android.graphics.Point();
+            display.getSize(size);
+            screenHeight = size.y;
+        }
+        
         int keyboardHeight = (int) (screenHeight * 0.4); // 40% of screen height
         
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
