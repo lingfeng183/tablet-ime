@@ -5,11 +5,35 @@ class KeyboardState extends ChangeNotifier {
   String _currentPinyin = '';
   List<String> _candidates = [];
   int _selectedCandidateIndex = 0;
+  bool _isFloating = false;
+  Offset _floatingPosition = const Offset(20, 100);
+  double _floatingWidth = 600;
+  double _floatingHeight = 300;
 
   bool get isChinese => _isChinese;
   String get currentPinyin => _currentPinyin;
   List<String> get candidates => _candidates;
   int get selectedCandidateIndex => _selectedCandidateIndex;
+  bool get isFloating => _isFloating;
+  Offset get floatingPosition => _floatingPosition;
+  double get floatingWidth => _floatingWidth;
+  double get floatingHeight => _floatingHeight;
+
+  void toggleFloating() {
+    _isFloating = !_isFloating;
+    notifyListeners();
+  }
+
+  void updateFloatingPosition(Offset position) {
+    _floatingPosition = position;
+    notifyListeners();
+  }
+
+  void updateFloatingSize(double width, double height) {
+    _floatingWidth = width;
+    _floatingHeight = height;
+    notifyListeners();
+  }
 
   void toggleLanguage() {
     _isChinese = !_isChinese;

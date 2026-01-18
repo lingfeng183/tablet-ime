@@ -209,79 +209,93 @@ class KeyboardLayout extends StatelessWidget {
   }
 
   Widget _buildSpecialKeys(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: '↑',
-              onPressed: () => _handleDirectionKey(context, 'ArrowUp'),
-              isSpecial: true,
+    return Consumer<KeyboardState>(
+      builder: (context, state, child) {
+        return Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: state.isFloating ? '📌' : '🪟',
+                  onPressed: () => state.toggleFloating(),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: '←',
-              onPressed: () => _handleDirectionKey(context, 'ArrowLeft'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: '↑',
+                  onPressed: () => _handleDirectionKey(context, 'ArrowUp'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: '↓',
-              onPressed: () => _handleDirectionKey(context, 'ArrowDown'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: '←',
+                  onPressed: () => _handleDirectionKey(context, 'ArrowLeft'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: '→',
-              onPressed: () => _handleDirectionKey(context, 'ArrowRight'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: '↓',
+                  onPressed: () => _handleDirectionKey(context, 'ArrowDown'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: 'Home',
-              onPressed: () => _handleSystemKey(context, 'Home'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: '→',
+                  onPressed: () => _handleDirectionKey(context, 'ArrowRight'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: 'End',
-              onPressed: () => _handleSystemKey(context, 'End'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: 'Home',
+                  onPressed: () => _handleSystemKey(context, 'Home'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: KeyButton(
-              label: 'Ins',
-              onPressed: () => _handleSystemKey(context, 'Insert'),
-              isSpecial: true,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: 'End',
+                  onPressed: () => _handleSystemKey(context, 'End'),
+                  isSpecial: true,
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: KeyButton(
+                  label: 'Ins',
+                  onPressed: () => _handleSystemKey(context, 'Insert'),
+                  isSpecial: true,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

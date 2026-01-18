@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:tablet_ime/keyboard_service.dart';
-import 'package:tablet_ime/keyboard_layout.dart';
+import 'package:tablet_ime/floating_keyboard.dart';
 import 'package:tablet_ime/keyboard_state.dart';
 
 void main() {
@@ -26,20 +26,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
         ),
-        home: const KeyboardScreen(),
+        home: const FloatingKeyboard(),
       ),
-    );
-  }
-}
-
-class KeyboardScreen extends StatelessWidget {
-  const KeyboardScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E),
-      body: const KeyboardLayout(),
     );
   }
 }
