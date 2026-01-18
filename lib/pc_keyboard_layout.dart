@@ -10,14 +10,8 @@ class PCKeyboardLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isLandscape = size.width > size.height;
-    final screenHeight = size.height;
-    // PC布局需要更多空间，使用60%（横屏）到65%（竖屏）
-    final keyboardHeight = isLandscape ? screenHeight * 0.6 : screenHeight * 0.65;
-    
     return Container(
-      height: keyboardHeight,
+      // Fill available space provided by Android IME service
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       decoration: const BoxDecoration(
         color: Color(0xFF1E1E1E), // Dark background to prevent transparency

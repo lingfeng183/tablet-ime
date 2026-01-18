@@ -9,15 +9,8 @@ class KeyboardLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions to calculate appropriate keyboard height
-    final size = MediaQuery.of(context).size;
-    final isLandscape = size.width > size.height;
-    final screenHeight = size.height;
-    // Use 50% in landscape, 55% in portrait to ensure all keys are visible
-    final keyboardHeight = isLandscape ? screenHeight * 0.5 : screenHeight * 0.55;
-    
     return Container(
-      height: keyboardHeight,
+      // Fill available space provided by Android IME service
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       decoration: const BoxDecoration(
         color: Color(0xFF1E1E1E), // Dark background to prevent transparency
